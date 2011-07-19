@@ -22,6 +22,13 @@ class Ganc_Logger {
         $this->logs[] = new Ganc_Logger_Row($message, $level);
     }
 
+    function  debug($message) { $this->append($message, __function__); }
+    function   info($message) { $this->append($message, __function__); }
+    function notice($message) { $this->append($message, __function__); }
+    function   warn($message) { $this->append($message, __function__); }
+    function  error($message) { $this->append($message, __function__); }
+    function   crit($message) { $this->append($message, __function__); }
+
     function __toString() {
         $logs = '';
         foreach ($this->logs as $log) {

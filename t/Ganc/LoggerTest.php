@@ -20,4 +20,17 @@ class Ganc_LoggerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('[INFO] default log' . PHP_EOL, (string)$default);
         $this->assertEquals('', (string)$queries);
     }
+
+    function testLeveledLogs() {
+        $logger = new Ganc_Logger();
+        $levels = array('debug', 'info', 'notice', 'warn', 'error', 'crit');
+        foreach ($levels as $level) {
+            $logger->$level($level);
+        }
+        $logs = array();
+        foreach ($logger->logs as $log) {
+            $logs[] = $log->level;
+        }
+        $this->assertEquals($levels, $logs);
+    }
 }
