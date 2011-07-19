@@ -15,9 +15,8 @@ class Ganc_EngineTest extends PHPUnit_Framework_TestCase {
         );
         $admin = array('id' => 1, 'name' => 'admin', 'password' => 'default');
         $user  = array('id' => 2, 'name' => 'user', 'password' => 'password');
-        $stmt = $engine->connection->prepare("INSERT INTO users (id,name,password) VALUES (:id,:name,:password)");
-        $stmt->execute($admin);
-        $stmt->execute($user);
+        $engine->query("INSERT INTO users (id,name,password) VALUES (:id,:name,:password)", $admin);
+        $engine->query("INSERT INTO users (id,name,password) VALUES (:id,:name,:password)", $user);
         $this->assertEquals(2, $engine->lastInsertId());
 
         $this->assertEquals($admin, $engine->find("SELECT * FROM users"));
@@ -51,5 +50,7 @@ class Ganc_EngineTest extends PHPUnit_Framework_TestCase {
             array(),
             $engine->findAll("SELECT * FROM users")
         );
+
+        echo (string)$engine->logger;
     }
 }
