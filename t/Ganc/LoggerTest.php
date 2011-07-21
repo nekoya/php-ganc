@@ -9,6 +9,8 @@ class Ganc_LoggerTest extends PHPUnit_Framework_TestCase {
     }
 
     function testGetLogger() {
+        Ganc_Logger::$instances = array();
+
         $default = Ganc_Logger::getLogger('default');
         $this->assertInstanceOf('Ganc_Logger', $default);
         $this->assertEquals('default', $default->name);
