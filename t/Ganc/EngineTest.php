@@ -51,6 +51,6 @@ class Ganc_EngineTest extends PHPUnit_Framework_TestCase {
             $engine->findAll("SELECT * FROM users")
         );
 
-        echo (string)$engine->logger;
+        //echo (string)$engine->logger;
     }
 }
