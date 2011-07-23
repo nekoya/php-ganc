@@ -46,4 +46,24 @@ class Ganc_SQLBuilderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('INSERT INTO `users` (`name`,`password`) VALUES (?,?)', $sql);
         $this->assertEquals(array('admin', 'default'), $binds);
     }
+
+    function testUpdate() {
+        $builder = new Ganc_SQLBuilder();
+
+        list($sql, $binds) = $builder->update(
+            'users',
+            array('name' => 'admin', 'password' => 'default'),
+            array('id' => 1)
+        );
+        $this->assertEquals('UPDATE `users` SET `name`=?,`password`=? WHERE `id`=?', $sql);
+        $this->assertEquals(array('admin', 'default', 1), $binds);
+
+        // with where
+        list($sql, $binds) = $builder->update(
+            'users',
+            array('name' => 'admin', 'password' => 'default')
+        );
+        $this->assertEquals('UPDATE `users` SET `name`=?,`password`=?', $sql);
+        $this->assertEquals(array('admin', 'default'), $binds);
+    }
 }

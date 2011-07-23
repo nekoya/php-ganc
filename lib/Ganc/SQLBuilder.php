@@ -7,12 +7,12 @@ class Ganc_SQLBuilder {
     }
 
     function select($table, $columns, $where=null, $opt=null) {
-        list($wheres, $binds) = $this->addWheres($where);
+        list($w, $binds) = $this->makeWhereClauses($where);
         $sql = sprintf(
             "SELECT %s FROM %s%s",
             implode(',', array_map(array($this, 'quote'), $columns)),
             $this->quote($table),
-            $wheres
+            $w
         );
         return array($sql, $binds);
     }
@@ -39,7 +39,7 @@ class Ganc_SQLBuilder {
         return array($sql, $binds);
     }
 
-    function update($table, $params, $where) {
+    function update($table, $params, $where=null) {
         $values = array();
         $binds = array();
         foreach ($params as $column => $value) {
@@ -47,10 +47,13 @@ class Ganc_SQLBuilder {
             $binds[] = $value;
         }
 
+        list ($w, $_binds) = $this->makeWhereClauses($where);
+        $binds = array_merge($binds, $_binds);
         $sql = sprintf(
-            "UPDATE %s SET %s",
+            "UPDATE %s SET %s%s",
             $this->quote($table),
-            $implode(',', $values)
+            implode(',', $values),
+            $w
         );
 
         return array($sql, $binds);
@@ -60,7 +63,7 @@ class Ganc_SQLBuilder {
         return $this->quote . $str . $this->quote;
     }
 
-    protected function addWheres($args) {
+    protected function makeWhereClauses($args) {
         if (is_null($args)) {
             return array('', array());
         }
