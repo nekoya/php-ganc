@@ -66,4 +66,16 @@ class Ganc_SQLBuilderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('UPDATE `users` SET `name`=?,`password`=?', $sql);
         $this->assertEquals(array('admin', 'default'), $binds);
     }
+
+    function testDelete() {
+        $builder = new Ganc_SQLBuilder();
+
+        list($sql, $binds) = $builder->delete('users');
+        $this->assertEquals('DELETE FROM `users`', $sql);
+        $this->assertEquals(array(), $binds);
+
+        list($sql, $binds) = $builder->delete('users', array('id' => 2));
+        $this->assertEquals('DELETE FROM `users` WHERE `id`=?', $sql);
+        $this->assertEquals(array(2), $binds);
+    }
 }

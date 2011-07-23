@@ -59,6 +59,16 @@ class Ganc_SQLBuilder {
         return array($sql, $binds);
     }
 
+    function delete($table, $where=null) {
+        list($w, $binds) = $this->makeWhereClauses($where);
+        $sql = sprintf(
+            "DELETE FROM %s%s",
+            $this->quote($table),
+            $w
+        );
+        return array($sql, $binds);
+    }
+
     protected function quote($str) {
         return $this->quote . $str . $this->quote;
     }
