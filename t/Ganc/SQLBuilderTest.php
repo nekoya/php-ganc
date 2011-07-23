@@ -34,6 +34,15 @@ class Ganc_SQLBuilderTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals('SELECT `id`,`name`,`password` FROM `users` WHERE `id`=? AND `name`=? AND `password`=?', $sql);
         $this->assertEquals(array(1, 'admin', 'default'), $binds);
+
+        // in
+        list($sql, $binds) = $builder->select(
+            'users',
+            array('id'),
+            array('id' => array('1', '2', '3'))
+        );
+        $this->assertEquals('SELECT `id` FROM `users` WHERE `id` IN (?,?,?)', $sql);
+        $this->assertEquals(array(1, 2, 3), $binds);
     }
 
     function testInsert() {

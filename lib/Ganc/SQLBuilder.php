@@ -82,10 +82,20 @@ class Ganc_SQLBuilder {
         $binds = array();
         foreach ($args as $key => $val) {
             if (is_array($val)) {
-                throw new Exception("not supported yet...");
+                $b = array();
+                foreach ($val as $v) {
+                    $b[] = '?';
+                    $binds[] = $v;
+                }
+                $wheres[] = sprintf(
+                    "%s IN (%s)",
+                    $this->quote($key),
+                    implode(',', $b)
+                );
+            } else {
+                $wheres[] = $this->quote($key) . '=?';
+                $binds[] = $val;
             }
-            $wheres[] = $this->quote($key) . '=?';
-            $binds[] = $val;
         }
         $sql = " WHERE " . implode(' AND ', $wheres);
         return array($sql, $binds);
