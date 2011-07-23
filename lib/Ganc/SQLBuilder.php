@@ -3,29 +3,18 @@ class Ganc_SQLBuilder {
     public $driver = 'mysql';
     public $quote = '`';
 
-    protected $wheres = array();
-    protected $binds = array();
-
     function __construct() {
     }
 
     function select($table, $columns, $where=null, $opt=null) {
-        $this->initWheres();
-        $sql = "SELECT ";
-        foreach ($columns as $column) {
-            $sql .= $this->quote($column) . ',';
-        }
-        $sql = rtrim($sql, ',');
-        $sql .= " FROM " . $this->quote($table);
-
-        if (!is_null($where)) {
-            foreach ($where as $key => $val) {
-                $this->addWhere($key, $val);
-            }
-            $sql .= " WHERE " . implode(' AND ', $this->wheres);
-        }
-
-        return array($sql, $this->binds);
+        list($wheres, $binds) = $this->addWheres($where);
+        $sql = sprintf(
+            "SELECT %s FROM %s%s",
+            implode(',', array_map(array($this, 'quote'), $columns)),
+            $this->quote($table),
+            $wheres
+        );
+        return array($sql, $binds);
     }
 
     function insert($table, $params) {
@@ -50,20 +39,42 @@ class Ganc_SQLBuilder {
         return array($sql, $binds);
     }
 
+    function update($table, $params, $where) {
+        $values = array();
+        $binds = array();
+        foreach ($params as $column => $value) {
+            $values[] = $this->quote($column) . '=?';
+            $binds[] = $value;
+        }
+
+        $sql = sprintf(
+            "UPDATE %s SET %s",
+            $this->quote($table),
+            $implode(',', $values)
+        );
+
+        return array($sql, $binds);
+    }
+
     protected function quote($str) {
         return $this->quote . $str . $this->quote;
     }
 
-    protected function initWheres() {
-        $this->wheres = array();
-        $this->binds = array();
-    }
-
-    protected function addWhere($key, $val) {
-        if (is_array($val)) {
-            throw new Exception("not supported yet...");
+    protected function addWheres($args) {
+        if (is_null($args)) {
+            return array('', array());
         }
-        $this->wheres[] = $this->quote($key) . '=?';
-        $this->binds[] = $val;
+
+        $wheres = array();
+        $binds = array();
+        foreach ($args as $key => $val) {
+            if (is_array($val)) {
+                throw new Exception("not supported yet...");
+            }
+            $wheres[] = $this->quote($key) . '=?';
+            $binds[] = $val;
+        }
+        $sql = " WHERE " . implode(' AND ', $wheres);
+        return array($sql, $binds);
     }
 }
