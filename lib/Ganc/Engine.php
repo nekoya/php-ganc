@@ -3,11 +3,14 @@ class Ganc_Engine {
     public $connection;
     public $logger;
 
+    protected $builder;
+
     function __construct($connection) {
         if (!is_null($connection)) {
             $this->connection = $connection;
         }
         $this->logger = Ganc_Logger::getLogger('queries');
+        $this->builder = new Ganc_SQLBuilder();
     }
 
     function query($sql, $params=array()) {
@@ -50,5 +53,10 @@ class Ganc_Engine {
 
     function rollBack() {
         return $this->connection->rollBack();
+    }
+
+    function insert($table, $params) {
+        list($sql, $binds) = $this->builder->insert($table, $params);
+        $this->query($sql, $binds);
     }
 }
